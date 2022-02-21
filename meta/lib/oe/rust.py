@@ -1,6 +1,6 @@
 # Convert a normal arch (HOST_ARCH, TARGET_ARCH, BUILD_ARCH, etc) to something
 # rust's internals won't choke on.
-def arch_to_rust_target_arch(arch):
+def arch_to_rust_arch(arch):
     if arch == "i586" or arch == "i686":
         return "x86"
     elif arch == "mipsel":
