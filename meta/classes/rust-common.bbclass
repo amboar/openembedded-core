@@ -97,6 +97,9 @@ def rust_triple(d, thing):
     pieces[0] = oe.rust.arch_to_rust_arch(pieces[0])
     return '-'.join(pieces)
 
+# In some cases uname and the toolchain differ on their idea of the arch name
+RUST_BUILD_ARCH = "${@oe.rust.arch_to_rust_arch(d.getVar('BUILD_ARCH'))}"
+
 # Naming explanation
 # Yocto
 # - BUILD_SYS - Yocto triple of the build environment
