@@ -9,8 +9,10 @@ def arch_to_rust_arch(arch):
         return "mips64"
     elif arch == "armv7":
         return "arm"
-    elif arch == "powerpc64le":
+    elif arch == "ppc64":
         return "powerpc64"
+    elif arch == "ppc64le":
+        return "powerpc64le"
     else:
         return arch
 
