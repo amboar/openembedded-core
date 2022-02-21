@@ -254,22 +254,6 @@ def sys_for(d, thing):
 def prefix_for(d, thing):
     return d.getVar('{}_PREFIX'.format(thing))
 
-# Convert a normal arch (HOST_ARCH, TARGET_ARCH, BUILD_ARCH, etc) to something
-# rust's internals won't choke on.
-def arch_to_rust_target_arch(arch):
-    if arch == "i586" or arch == "i686":
-        return "x86"
-    elif arch == "mipsel":
-        return "mips"
-    elif arch == "mip64sel":
-        return "mips64"
-    elif arch == "armv7":
-        return "arm"
-    elif arch == "powerpc64le":
-        return "powerpc64"
-    else:
-        return arch
-
 # generates our target CPU value
 def llvm_cpu(d):
     cpu = d.getVar('PACKAGE_ARCH')
@@ -329,7 +313,7 @@ def rust_gen_target(d, thing, wd, features, cpu, arch, abi=""):
     tspec['target-pointer-width'] = d.getVarFlag('TARGET_POINTER_WIDTH', arch_abi)
     tspec['target-c-int-width'] = d.getVarFlag('TARGET_C_INT_WIDTH', arch_abi)
     tspec['target-endian'] = d.getVarFlag('TARGET_ENDIAN', arch_abi)
-    tspec['arch'] = arch_to_rust_target_arch(arch)
+    tspec['arch'] = oe.rust.arch_to_rust_target_arch(arch)
     tspec['os'] = "linux"
     if "musl" in tspec['llvm-target']:
         tspec['env'] = "musl"
