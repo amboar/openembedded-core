@@ -35,8 +35,11 @@ setup_cargo_environment () {
     # Later stages are build for the native target (i.e. target.x86_64-linux)
     cargo_common_do_configure
 
-    printf '[target.%s]\n' "${SNAPSHOT_BUILD_SYS}" >> ${CARGO_HOME}/config
-    printf "linker = '%s'\n" "${RUST_BUILD_CCLD}" >> ${CARGO_HOME}/config
+    if [ ${SNAPSHOT_BUILD_SYS} != ${RUST_BUILD_SYS} ]
+    then
+        printf '[target.%s]\n' "${SNAPSHOT_BUILD_SYS}" >> ${CARGO_HOME}/config
+        printf "linker = '%s'\n" "${RUST_BUILD_CCLD}" >> ${CARGO_HOME}/config
+    fi
 }
 
 include rust-common.inc
@@ -88,15 +91,16 @@ python do_configure() {
     config.set(target_section, "cxx", e(d.expand("${RUST_TARGET_CXX}")))
     config.set(target_section, "cc", e(d.expand("${RUST_TARGET_CC}")))
 
-    # If we don't do this rust-native will compile it's own llvm for BUILD.
-    # [target.${BUILD_ARCH}-unknown-linux-gnu]
-    target_section = "target.{}".format(d.getVar('SNAPSHOT_BUILD_SYS', True))
-    config.add_section(target_section)
+    if (d.getVar('SNAPSHOT_BUILD_SYS') != d.getVar('RUST_TARGET_SYS')):
+        # If we don't do this rust-native will compile it's own llvm for BUILD.
+        # [target.${BUILD_ARCH}-unknown-linux-gnu]
+        target_section = "target.{}".format(d.getVar('SNAPSHOT_BUILD_SYS', True))
+        config.add_section(target_section)
 
-    config.set(target_section, "llvm-config", e(llvm_config))
+        config.set(target_section, "llvm-config", e(llvm_config))
 
-    config.set(target_section, "cxx", e(d.expand("${RUST_BUILD_CXX}")))
-    config.set(target_section, "cc", e(d.expand("${RUST_BUILD_CC}")))
+        config.set(target_section, "cxx", e(d.expand("${RUST_BUILD_CXX}")))
+        config.set(target_section, "cc", e(d.expand("${RUST_BUILD_CC}")))
 
     # [rust]
     config.add_section("rust")
