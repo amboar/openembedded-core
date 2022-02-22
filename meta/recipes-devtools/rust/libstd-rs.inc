@@ -35,6 +35,14 @@ do_install () {
     # With the incremental build support added in 1.24, the libstd deps directory also includes dependency
     # files that get installed. Those are really only needed to incrementally rebuild the libstd library
     # itself and don't need to be installed.
-    rm -f ${B}/${TARGET_SYS}/${BUILD_DIR}/deps/*.d
-    cp ${B}/${TARGET_SYS}/${BUILD_DIR}/deps/* ${D}${rustlibdir}
+    #
+    # ${B} contains two directories, one for the target architecture and one for the build mode
+    # (e.g. "release"). In some cases (e.g. ARMv7) the build directory matches neither ${TARGET_SYS}
+    # (due to "unknown" vendor from rust_base_triple()) nor ${RUST_TARGET_SYS} (due to architecture
+    # name mangling in rust_base_triple()). Further, rust_base_triple() always assumes a linux
+    # OS, so exploit both "unknown" and "linux" in a triple glob to select the right source
+    # directory.
+    DEPS=${B}/*-unknown-linux-*/${BUILD_DIR}/deps
+    rm -f ${DEPS}/*.d
+    cp ${DEPS}/* ${D}${rustlibdir}
 }
