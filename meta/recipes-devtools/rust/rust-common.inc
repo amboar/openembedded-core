@@ -249,14 +249,14 @@ TARGET_C_INT_WIDTH[riscv64] = "64"
 MAX_ATOMIC_WIDTH[riscv64] = "64"
 
 def sys_for(d, thing):
-    return d.getVar('{}_SYS'.format(thing))
+    return d.getVar('RUST_{}_SYS'.format(thing))
 
 def prefix_for(d, thing):
     return d.getVar('{}_PREFIX'.format(thing))
 
 # generates our target CPU value
 def llvm_cpu(d):
-    cpu = d.getVar('PACKAGE_ARCH')
+    cpu = oe.rust.arch_to_rust_arch(d.getVar('PACKAGE_ARCH'))
     target = d.getVar('TRANSLATED_TARGET_ARCH')
 
     trans = {}
@@ -298,6 +298,8 @@ def rust_gen_target(d, thing, wd, features, cpu, arch, abi=""):
     sys = sys_for(d, thing)
     prefix = prefix_for(d, thing)
 
+    arch = oe.rust.arch_to_rust_arch(arch)
+
     if abi:
         arch_abi = "{}-{}".format(arch, abi)
     else:
@@ -314,7 +316,7 @@ def rust_gen_target(d, thing, wd, features, cpu, arch, abi=""):
     tspec['target-pointer-width'] = d.getVarFlag('TARGET_POINTER_WIDTH', arch_abi)
     tspec['target-c-int-width'] = d.getVarFlag('TARGET_C_INT_WIDTH', arch_abi)
     tspec['target-endian'] = d.getVarFlag('TARGET_ENDIAN', arch_abi)
-    tspec['arch'] = oe.rust.arch_to_rust_arch(arch)
+    tspec['arch'] = arch
     tspec['os'] = "linux"
     if "musl" in tspec['llvm-target']:
         tspec['env'] = "musl"
@@ -345,7 +347,7 @@ def rust_gen_target(d, thing, wd, features, cpu, arch, abi=""):
 
 python do_rust_gen_targets () {
     wd = d.getVar('WORKDIR') + '/targets/'
-    build_arch = d.getVar('BUILD_ARCH')
+    build_arch = d.getVar('RUST_BUILD_ARCH')
     rust_gen_target(d, 'BUILD', wd, "", "generic", build_arch)
 }
 

@@ -22,7 +22,7 @@ do_install () {
     # The required structure is retained for simplicity.
     SYS_LIBDIR=$(dirname ${D}${libdir})
     SYS_BINDIR=$(dirname ${D}${bindir})
-    RUSTLIB_DIR=${SYS_LIBDIR}/${TARGET_SYS}/rustlib
+    RUSTLIB_DIR=${SYS_LIBDIR}/${RUST_TARGET_SYS}/rustlib
 
     install -d "${SYS_BINDIR}"
     cp build/${SNAPSHOT_BUILD_SYS}/stage2/bin/* ${SYS_BINDIR}
@@ -31,8 +31,8 @@ do_install () {
     done
 
     install -d "${D}${libdir}"
-    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/*.so ${SYS_LIBDIR}
-    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/rustlib ${RUSTLIB_DIR}
+    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${RUST_TARGET_SYS}/*.so ${SYS_LIBDIR}
+    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${RUST_TARGET_SYS}/rustlib ${RUSTLIB_DIR}
 
     for i in ${SYS_LIBDIR}/*.so; do
 	chrpath -r "\$ORIGIN/../lib" ${i}
@@ -41,7 +41,7 @@ do_install () {
 	chrpath -d ${i}
     done
 
-    install -m 0644 "${WORKDIR}/targets/${TARGET_SYS}.json" "${RUSTLIB_DIR}"
+    install -m 0644 "${WORKDIR}/targets/${RUST_TARGET_SYS}.json" "${RUSTLIB_DIR}"
 
     SRC_DIR=${RUSTLIB_DIR}/src/rust
     install -d ${SRC_DIR}/src/llvm-project
@@ -56,8 +56,9 @@ do_install () {
     ENV_SETUP_SH="${ENV_SETUP_DIR}/rust.sh"
 
     cat <<- EOF > "${ENV_SETUP_SH}"
-	export RUSTFLAGS="--sysroot=\$OECORE_NATIVE_SYSROOT/usr -C link-arg=--sysroot=\$OECORE_TARGET_SYSROOT -L\$OECORE_NATIVE_SYSROOT/usr/lib/${TARGET_SYS}/rustlib/${TARGET_SYS}/lib"
-	export RUST_TARGET_PATH="\$OECORE_NATIVE_SYSROOT/usr/lib/${TARGET_SYS}/rustlib"
+	export RUSTFLAGS="--sysroot=\$OECORE_NATIVE_SYSROOT/usr -C
+    link-arg=--sysroot=\$OECORE_TARGET_SYSROOT -L\$OECORE_NATIVE_SYSROOT/usr/lib/${RUST_TARGET_SYS}/rustlib/${RUST_TARGET_SYS}/lib"
+	export RUST_TARGET_PATH="\$OECORE_NATIVE_SYSROOT/usr/lib/${RUST_TARGET_SYS}/rustlib"
 	EOF
 
     chown -R root.root ${D}
@@ -65,14 +66,14 @@ do_install () {
 
 PKG_SYS_LIBDIR = "${SDKPATHNATIVE}/usr/lib"
 PKG_SYS_BINDIR = "${SDKPATHNATIVE}/usr/bin"
-PKG_RUSTLIB_DIR = "${PKG_SYS_LIBDIR}/${TARGET_SYS}/rustlib"
+PKG_RUSTLIB_DIR = "${PKG_SYS_LIBDIR}/${RUST_TARGET_SYS}/rustlib"
 FILES:${PN} = "${PKG_SYS_LIBDIR}/*.so ${PKG_SYS_BINDIR} ${base_prefix}/environment-setup.d"
-FILES:${RUSTLIB_TARGET_PN} = "${PKG_RUSTLIB_DIR}/${TARGET_SYS} ${PKG_RUSTLIB_DIR}/${TARGET_SYS}.json"
-FILES:${RUSTLIB_HOST_PN} = "${PKG_RUSTLIB_DIR}/${BUILD_ARCH}-unknown-linux-gnu"
+FILES:${RUSTLIB_TARGET_PN} = "${PKG_RUSTLIB_DIR}/${RUST_TARGET_SYS} ${PKG_RUSTLIB_DIR}/${RUST_TARGET_SYS}.json"
+FILES:${RUSTLIB_HOST_PN} = "${PKG_RUSTLIB_DIR}/${RUST_BUILD_ARCH}-unknown-linux-gnu"
 FILES:${RUSTLIB_SRC_PN} = "${PKG_RUSTLIB_DIR}/src"
 
-SUMMARY:${RUSTLIB_TARGET_PN} = "Rust cross canadian libaries for ${TARGET_SYS}"
-SUMMARY:${RUSTLIB_HOST_PN} = "Rust cross canadian libaries for ${HOST_SYS}"
+SUMMARY:${RUSTLIB_TARGET_PN} = "Rust cross canadian libaries for ${RUST_TARGET_SYS}"
+SUMMARY:${RUSTLIB_HOST_PN} = "Rust cross canadian libaries for ${RUST_HOST_SYS}"
 SUMMARY:${RUSTLIB_SRC_PN} = "Rust standard library sources for cross canadian toolchain"
 SUMMARY:${PN} = "Rust crost canadian compiler"
 

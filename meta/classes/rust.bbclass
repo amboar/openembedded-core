@@ -2,14 +2,14 @@ inherit rust-common
 
 RUSTC = "rustc"
 
-RUSTC_ARCHFLAGS += "--target=${HOST_SYS} ${RUSTFLAGS}"
+RUSTC_ARCHFLAGS += "--target=${RUST_HOST_SYS} ${RUSTFLAGS}"
 
 def rust_base_dep(d):
     # Taken from meta/classes/base.bbclass `base_dep_prepend` and modified to
     # use rust instead of gcc
     deps = ""
     if not d.getVar('INHIBIT_DEFAULT_RUST_DEPS'):
-        if (d.getVar('HOST_SYS') != d.getVar('BUILD_SYS')):
+        if (d.getVar('RUST_HOST_SYS') != d.getVar('RUST_BUILD_SYS')):
             deps += " virtual/${TARGET_PREFIX}rust ${RUSTLIB_DEP}"
         else:
             deps += " rust-native"
@@ -37,9 +37,9 @@ HOST_CFLAGS   ?= "${CFLAGS}"
 HOST_CXXFLAGS ?= "${CXXFLAGS}"
 HOST_CPPFLAGS ?= "${CPPFLAGS}"
 
-rustlib_suffix="${TUNE_ARCH}${TARGET_VENDOR}-${TARGET_OS}/rustlib/${HOST_SYS}/lib"
+rustlib_suffix="${TUNE_ARCH}${TARGET_VENDOR}-${TARGET_OS}/rustlib/${RUST_HOST_SYS}/lib"
 # Native sysroot standard library path
 rustlib_src="${prefix}/lib/${rustlib_suffix}"
 # Host sysroot standard library path
 rustlib="${libdir}/${rustlib_suffix}"
-rustlib:class-native="${libdir}/rustlib/${BUILD_SYS}/lib"
+rustlib:class-native="${libdir}/rustlib/${RUST_BUILD_SYS}/lib"

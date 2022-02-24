@@ -30,7 +30,7 @@ python do_rust_gen_targets () {
     wd = d.getVar('WORKDIR') + '/targets/'
     rust_gen_target(d, 'TARGET', wd, d.getVar('TARGET_LLVM_FEATURES') or "", d.getVar('TARGET_LLVM_CPU'), d.getVar('TARGET_ARCH'))
     rust_gen_target(d, 'HOST', wd, "", "generic", d.getVar('HOST_ARCH'))
-    rust_gen_target(d, 'BUILD', wd, "", "generic", d.getVar('BUILD_ARCH'))
+    rust_gen_target(d, 'BUILD', wd, "", "generic", d.getVar('RUST_BUILD_ARCH'))
 }
 
 INHIBIT_DEFAULT_RUST_DEPS = "1"
@@ -42,8 +42,8 @@ export WRAPPER_TARGET_LDFLAGS = "${TARGET_LDFLAGS}"
 export WRAPPER_TARGET_AR = "${TARGET_PREFIX}ar"
 
 python do_configure:prepend() {
-    targets = [d.getVar("TARGET_SYS", True), "{}-unknown-linux-gnu".format(d.getVar("HOST_ARCH", True))]
-    hosts = ["{}-unknown-linux-gnu".format(d.getVar("HOST_ARCH", True))]
+    targets = [d.getVar("RUST_TARGET_SYS", True), "{}-unknown-linux-gnu".format(d.getVar("RUST_HOST_ARCH", True))]
+    hosts = ["{}-unknown-linux-gnu".format(d.getVar("RUST_HOST_ARCH", True))]
 }
 
 INSANE_SKIP:${RUSTLIB_TARGET_PN} = "file-rdeps arch ldflags"
