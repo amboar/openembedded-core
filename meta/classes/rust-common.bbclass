@@ -89,6 +89,14 @@ def rust_base_triple(d, thing):
         libc = bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', 'hf', '', d)
     return arch + vendor + '-' + os + libc
 
+def rust_triple(d, thing):
+    '''
+    Apply only arch mangling to bitbake's *_SYS variables
+    '''
+    pieces = d.getVar('{}_SYS'.format(thing)).split('-')
+    pieces[0] = oe.rust.arch_to_rust_arch(pieces[0])
+    return '-'.join(pieces)
+
 # Naming explanation
 # Yocto
 # - BUILD_SYS - Yocto triple of the build environment
@@ -114,6 +122,10 @@ def rust_base_triple(d, thing):
 RUST_BASE_BUILD_SYS = "${@rust_base_triple(d, 'BUILD')}"
 RUST_BASE_HOST_SYS = "${@rust_base_triple(d, 'HOST')}"
 RUST_BASE_TARGET_SYS = "${@rust_base_triple(d, 'TARGET')}"
+
+RUST_BUILD_SYS = "${@rust_triple(d, 'BUILD')}"
+RUST_HOST_SYS = "${@rust_triple(d, 'HOST')}"
+RUST_TARGET_SYS = "${@rust_triple(d, 'TARGET')}"
 
 # wrappers to get around the fact that Rust needs a single
 # binary but Yocto's compiler and linker commands have
