@@ -111,9 +111,9 @@ def rust_base_triple(d, thing):
 # The way that Rust's internal triples and Yocto triples are mapped together
 # its likely best to not use the triple suffix due to potential confusion.
 
-RUST_BUILD_SYS = "${@rust_base_triple(d, 'BUILD')}"
-RUST_HOST_SYS = "${@rust_base_triple(d, 'HOST')}"
-RUST_TARGET_SYS = "${@rust_base_triple(d, 'TARGET')}"
+RUST_BASE_BUILD_SYS = "${@rust_base_triple(d, 'BUILD')}"
+RUST_BASE_HOST_SYS = "${@rust_base_triple(d, 'HOST')}"
+RUST_BASE_TARGET_SYS = "${@rust_base_triple(d, 'TARGET')}"
 
 # wrappers to get around the fact that Rust needs a single
 # binary but Yocto's compiler and linker commands have

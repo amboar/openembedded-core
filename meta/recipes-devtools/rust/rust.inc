@@ -25,7 +25,7 @@ export YOCTO_ALTERNATE_MULTILIB_NAME = "/${BASELIB}"
 # own vendoring.
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 
-# We can't use RUST_BUILD_SYS here because that may be "musl" if
+# We can't use RUST_BASE_BUILD_SYS here because that may be "musl" if
 # TCLIBC="musl". Snapshots are always -unknown-linux-gnu
 SNAPSHOT_BUILD_SYS = "${BUILD_ARCH}-unknown-linux-gnu"
 setup_cargo_environment () {
